@@ -27,6 +27,8 @@ The QOI format is also extremely simple, which helps a lot when porting to other
 converts between png <> qoi
  - [qoibench.c](https://github.com/phoboslab/qoi/blob/master/qoibench.c)
 a simple wrapper to benchmark stbi, libpng and qoi
+ - [qoitest.c](https://github.com/phoboslab/qoi/blob/master/qoitest.c)
+roundtrip and format tests; run them with `make test`
 
 
 ## MIME Type, File Extension

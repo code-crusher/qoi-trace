@@ -93,6 +93,15 @@ The hash function for the index is:
 
 	index_position = (r * 3 + g * 5 + b * 7 + a * 11) % 64
 
+For a grey pixel, where r == g == b, this reduces to (15 * r + 11 * a) % 64.
+Since 15 and 64 are coprime, grey values that differ modulo 64 always map to
+distinct index positions (for a fixed alpha). An image with up to 64 distinct
+shades of grey can therefore keep all of them in the index at once: once a
+shade has been seen, every later pixel of that shade is a single
+QOI_OP_INDEX byte. For example, the 52 shades 0, 5, 10, ... 255 all fit.
+Images with more than 64 grey values share index positions between shades that
+are equal modulo 64, but are still encoded losslessly.
+
 Each chunk starts with a 2- or 8-bit tag, followed by a number of data bits. The
 bit length of chunks is divisible by 8 - i.e. all chunks are byte aligned. All
 values encoded in these data bits have the most significant bit on the left.
