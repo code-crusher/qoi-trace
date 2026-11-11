@@ -3,9 +3,12 @@ CFLAGS_BENCH ?= -std=gnu99 -O3
 LFLAGS_BENCH ?= -lpng $(LDFLAGS)
 CFLAGS_CONV ?= -std=c99 -O3
 LFLAGS_CONV ?= $(LDFLAGS)
+CFLAGS_TEST ?= -std=c99 -O2 -Wall -Wextra
+LFLAGS_TEST ?= $(LDFLAGS)
 
 TARGET_BENCH ?= qoibench
 TARGET_CONV ?= qoiconv
+TARGET_TEST ?= qoitest
 
 all: $(TARGET_BENCH) $(TARGET_CONV)
 
@@ -17,6 +20,12 @@ conv: $(TARGET_CONV)
 $(TARGET_CONV):$(TARGET_CONV).c qoi.h
 	$(CC) $(CFLAGS_CONV) $(CFLAGS) $(TARGET_CONV).c -o $(TARGET_CONV) $(LFLAGS_CONV)
 
-.PHONY: clean
+test: $(TARGET_TEST)
+	./$(TARGET_TEST)
+
+$(TARGET_TEST):$(TARGET_TEST).c qoi.h
+	$(CC) $(CFLAGS_TEST) $(CFLAGS) $(TARGET_TEST).c -o $(TARGET_TEST) $(LFLAGS_TEST)
+
+.PHONY: all bench conv test clean
 clean:
-	$(RM) $(TARGET_BENCH) $(TARGET_CONV)
+	$(RM) $(TARGET_BENCH) $(TARGET_CONV) $(TARGET_TEST) qoitest_tmp.qoi

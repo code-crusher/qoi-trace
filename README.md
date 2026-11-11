@@ -55,6 +55,36 @@ If this is a limitation for your use case, please look into any of the other
 implementations listed below.
 
 
+## Many Small Images
+
+When processing a large number of small images (e.g. tens of thousands of
+thumbnails), encoding/decoding them individually is generally as fast as, or
+faster than, packing them into one large canvas and en-/decoding that. QOI's
+per-image overhead is tiny (a 14 byte header and an 8 byte end marker), while
+packing and unpacking a canvas requires an extra copy of every pixel and the
+canvas decoder touches many more pixels before an individual thumbnail is
+available.
+
+If the `malloc()`/`free()` for the encoded and decoded buffers shows up in a
+profile, `qoi_encode_to()` and `qoi_decode_to()` write into a caller supplied
+buffer instead, so one buffer can be reused for all images:
+
+```c
+int capacity = qoi_encode_size(&desc);
+unsigned char *encoded = malloc(capacity);
+unsigned char *pixels = malloc(desc.width * desc.height * desc.channels);
+
+for (int i = 0; i < image_count; i++) {
+	int encoded_len;
+	qoi_desc decoded_desc;
+
+	qoi_encode_to(images[i], &desc, encoded, capacity, &encoded_len);
+	qoi_decode_to(encoded, encoded_len, &decoded_desc, desc.channels, pixels);
+	/* use pixels */
+}
+```
+
+
 ## Improvements, New Versions and Contributing
 
 The QOI format has been finalized. It was a conscious decision to **not** have a
